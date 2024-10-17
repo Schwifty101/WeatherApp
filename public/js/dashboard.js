@@ -149,6 +149,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (event.type === 'click' || (event.type === 'keydown' && event.key === 'Enter')) {
             const city = cityInput.value.trim();
             if (city) {
+                document.getElementById("weatherWidget").classList.remove("hidden");
+                document.getElementById("chartContainer").classList.remove("hidden");
                 fetchWeather(city);
             }
         }
