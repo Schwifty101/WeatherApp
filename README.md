@@ -3,9 +3,9 @@
 
 ## Overview
 
-This project is a **weather forecast application** combined with a **chat interface** for interacting with a bot. It allows users to retrieve weather data for any city using the OpenWeather API, view the results in a paginated table, and toggle between Celsius and Fahrenheit. The application also integrates a chatbot that provides responses based on user inputs.
+This project is a **weather forecast application** combined with a **chat interface** for interacting with a bot. It allows users to retrieve weather data for any city using the OpenWeather API. The application also integrates a chatbot that provides responses based on user inputs.
 
-The project is built with **Node.js** on the backend and uses **HTML**, **CSS**, **JavaScript**, and **Tailwind CSS** for the frontend. It features API integration with OpenWeather and a chatbot service (referred to as **Gemini** in the code).
+The project is built with **Node.js** on the backend and uses **HTML**, **CSS**, **JavaScript**, and **Tailwind CSS** for the frontend. It features API integration with OpenWeather and a chatbot service using **Google Gemini**.
 
 
 ## Features
@@ -22,7 +22,7 @@ The project is built with **Node.js** on the backend and uses **HTML**, **CSS**,
 ### Chatbot Integration:
 - **Chat Interface**: Users can send messages and receive responses from the bot.
 - **Toggle Chat**: A chat widget that can be minimized or maximized.
-- **Real Time Weather Queries:** The bot responds to user weather queries in real-time.
+- **Real Time Weather Queries:** The bot responds to user's weather related queries in real-time.
 
 ## Project Structure
 
