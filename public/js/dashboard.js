@@ -54,7 +54,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (lastCity) {
         const storedData = localStorage.getItem(`weatherData_${lastCity}`);
         if (storedData) {
+            document.getElementById("weatherWidget").classList.remove("hidden");
+            document.getElementById("chartContainer").classList.remove("hidden");
             displayWeather(JSON.parse(storedData)); // Display cached data
+            const dailyForecasts = JSON.parse(storedData).list.filter(forecast => {
+                return forecast.dt_txt.includes('12:00:00');
+            });
+            setupCharts(dailyForecasts);
         } else {
             fetchWeather(lastCity); // Fetch new data if not cached
         }
