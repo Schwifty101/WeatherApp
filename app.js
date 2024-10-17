@@ -51,10 +51,10 @@ const weatherKeywords = ['weather', 'temperature', 'forecast', 'rain', 'sun', 'h
 // Function to check if the message contains a city from the city list
 function extractCityFromMessage(message) {
     const messageLowerCase = message.toLowerCase();
+    const messageWords = messageLowerCase.split(/\s+/);
 
     // Find a matching city in the user's message
-    const city = citiesList.find((city) => messageLowerCase.includes(city.toLowerCase()));
-
+    const city = citiesList.find(city => messageWords.includes(city.toLowerCase()));
     // Debugging: log the extracted city
     console.log("Extracted City:", city);
 
