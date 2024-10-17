@@ -1,0 +1,66 @@
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        max-height: 0;
+        display: none;
+    }
+
+    to {
+        opacity: 1;
+        max-height: 300px;
+        display: block;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        max-height: 300px;
+        display: block;
+    }
+
+    to {
+        opacity: 0;
+        max-height: 0;
+        display: none;
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+#chatbox {
+    max-height: 300px;
+}
+
+#userQuery {
+    max-height: 40px;
+}
+
+/* Styles for minimized state */
+#chatWidget.minimized {
+    width: 50px;
+    /* Set the width for the minimized state */
+    height: 50px;
+    /* Set the height for the minimized state */
+    border-radius: 50%;
+    /* Make it circular */
+    overflow: hidden;
+    /* Hide overflow when minimized */
+    display: flex;
+    /* Keep it centered */
+    align-items: center;
+    /* Center contents */
+    justify-content: center;
+    /* Center contents */
+    padding: 0;
+    /* Remove padding when minimized */
+    background-color: #3B82F6;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#toggleChat {
+    color: blue;
+    font-size: 24px;
+}

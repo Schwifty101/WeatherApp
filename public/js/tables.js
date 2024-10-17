@@ -54,11 +54,21 @@ function fetchWeather() {
         });
 }
 
+
+const selectElement = document.getElementById('filterOptions');
 // Function to toggle between Celsius and Fahrenheit
 function toggleUnit() {
     isCelsius = !isCelsius; // Toggle state
     const unitButton = document.getElementById('unitToggle');
     unitButton.textContent = isCelsius ? 'Switch to Fahrenheit' : 'Switch to Celsius';
+
+    // Find the "unitToggle" option by iterating through options
+    for (let i = 0; i < selectElement.options.length; i++) {
+        if (selectElement.options[i].value === 'unitToggle') {
+            selectElement.options[i].text = isCelsius ? 'Switch to Fahrenheit' : 'Switch to Celsius';
+            break;
+        }
+    }
     populateForecastTable(forecastData); // Re-render table
 }
 

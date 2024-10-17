@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Create a container for the 5-day forecast
         const forecastContainer = document.createElement('div');
-        forecastContainer.className = 'mt-6 bg-blue-200 p-4 rounded-lg shadow-lg flex space-x-4';
+        forecastContainer.className = 'mt-6 bg-blue-200 p-4 rounded-lg shadow-lg flex flex-col md:flex-row space-y-4 md:space-x-4';
 
         // Populate the forecast container with daily data
         dailyForecasts.forEach((forecast) => {
