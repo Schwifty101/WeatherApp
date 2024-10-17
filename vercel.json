@@ -1,5 +1,15 @@
 {
   "version": 2,
-  "builds": [{"src": "./app,js", "use": "@vercel/node"}],
-  "routes": [{"src": "/(.*)", "dest": "/"}]
+  "builds": [
+    {
+      "src": "app.js",  // The entry point of your app
+      "use": "@vercel/node"  // Use the Node.js runtime
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/app.js"  // Define routing to the entry point
+    }
+  ]
 }
