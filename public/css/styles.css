@@ -41,21 +41,13 @@
 /* Styles for minimized state */
 #chatWidget.minimized {
     width: 50px;
-    /* Set the width for the minimized state */
     height: 50px;
-    /* Set the height for the minimized state */
     border-radius: 50%;
-    /* Make it circular */
     overflow: hidden;
-    /* Hide overflow when minimized */
     display: flex;
-    /* Keep it centered */
     align-items: center;
-    /* Center contents */
     justify-content: center;
-    /* Center contents */
     padding: 0;
-    /* Remove padding when minimized */
     background-color: #3B82F6;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }

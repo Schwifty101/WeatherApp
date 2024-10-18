@@ -1,8 +1,4 @@
-// dashboard.js
-
-// Wait for the DOM to fully load before executing the script
 document.addEventListener('DOMContentLoaded', async function () {
-    // === DOM Elements ===
     const weatherWidget = document.getElementById('weatherWidget');
     const cityNameElem = document.getElementById('cityName');
     const temperatureElem = document.getElementById('temperature');
@@ -11,15 +7,18 @@ document.addEventListener('DOMContentLoaded', async function () {
     const getWeatherButton = document.getElementById('getWeather');
     const fiveDayForecast = document.getElementById('fiveDayForecast');
 
-    // === Chart Instances ===
+    getWeatherButton.addEventListener('click', handleWeatherRequest);
+    cityInput.addEventListener('keydown', handleWeatherRequest);
+
+    // Chart Instances 
     let verticalBarChart = null;
     let doughnutChart = null;
     let lineChart = null;
 
-    // === Retrieve Last City from Cookies ===
+    // Retrieve Last City from Cookies 
     let lastCity = getCookie('lastCity') || "";
 
-    // === Function to Fetch API Key from Server ===
+    // Fetch API Key from app.js
     async function fetchApiKey() {
         try {
             const response = await fetch('/api/config');
@@ -31,26 +30,22 @@ document.addEventListener('DOMContentLoaded', async function () {
         } catch (error) {
             console.error('Error fetching API keys:', error);
             alert('Failed to retrieve API keys. Please try again later.');
-            throw error; // Rethrow to handle initialization failure
+            throw error; 
         }
     }
 
-    // === Initialize API Key ===
+    // Initialize API Key
     let apiKey;
     try {
-        apiKey = await fetchApiKey(); // Set API key as a const
+        apiKey = await fetchApiKey(); 
     } catch (error) {
-        // If fetching API key fails, disable weather functionality
+        // disable weather function if API key fails
         getWeatherButton.disabled = true;
         cityInput.disabled = true;
-        return; // Exit the script
+        return;
     }
 
-    // === Event Listeners ===
-    getWeatherButton.addEventListener('click', handleWeatherRequest);
-    cityInput.addEventListener('keydown', handleWeatherRequest);
-
-    // === Check and Display Last City's Weather Data ===
+    // Check and Display Last City's Weather Data 
     if (lastCity) {
         const storedData = localStorage.getItem(`weatherData_${lastCity}`);
         if (storedData) {
@@ -62,15 +57,17 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
             setupCharts(dailyForecasts);
         } else {
-            fetchWeather(lastCity); // Fetch new data if not cached
+            fetchWeather(lastCity);
         }
     }
 
-    // === Function to Fetch Weather Data ===
+    // Function to Fetch Weather Data
     async function fetchWeather(city) {
         if (city === lastCity) return; // Prevent redundant API calls
-        lastCity = city; // Update last queried city
-        setCookie('lastCity', city, 7); // Store last city in cookies
+
+        // Update city
+        lastCity = city; 
+        setCookie('lastCity', city, 7);
 
         const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
 
@@ -79,21 +76,23 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (!response.ok) throw new Error("City not found");
 
             const data = await response.json();
-            localStorage.setItem(`weatherData_${city}`, JSON.stringify(data)); // Cache the data
+
+            // Cache data
+            localStorage.setItem(`weatherData_${city}`, JSON.stringify(data));
             displayWeather(data);
         } catch (error) {
             handleError(error.message);
         }
     }
 
-    // === Function to Format Timestamp into Readable Date ===
+    // Format time 
     function formatDate(timestamp) {
         const date = new Date(timestamp * 1000);
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         return date.toLocaleDateString(undefined, options);
     }
 
-    // === Function to Display Weather Data ===
+    // display Weather data
     function displayWeather(data) {
         // Filter forecasts to get data for 12 PM each day
         const dailyForecasts = data.list.filter(forecast => {
@@ -105,20 +104,20 @@ document.addEventListener('DOMContentLoaded', async function () {
             return;
         }
 
-        // Display basic weather information
+        // Display information
         const todayWeather = dailyForecasts[0].weather[0].description.toLowerCase();
         cityNameElem.textContent = data.city.name;
         temperatureElem.textContent = `Temperature: ${dailyForecasts[0].main.temp} °C`;
         weatherDescriptionElem.textContent = `Weather: ${dailyForecasts[0].weather[0].description}`;
 
-        // Setup Charts with the forecast data
+        // Setup Charts
         setupCharts(dailyForecasts);
 
-        // Create a container for the 5-day forecast
+        // container for the 5-day forecast
         const forecastContainer = document.createElement('div');
         forecastContainer.className = 'mt-6 bg-blue-200 p-4 rounded-lg shadow-lg flex flex-col md:flex-row space-y-4 md:space-x-4';
 
-        // Populate the forecast container with daily data
+        // Populate the forecast container
         dailyForecasts.forEach((forecast) => {
             const dayElement = document.createElement('div');
             dayElement.className = 'flex-1 border rounded p-2';
@@ -133,25 +132,23 @@ document.addEventListener('DOMContentLoaded', async function () {
             forecastContainer.appendChild(dayElement);
         });
 
-        // Dynamically set the background color based on today's weather
+        // set the background color
         setWeatherBackground(todayWeather);
 
-        // Clear any previous forecast and append the new one
         fiveDayForecast.innerHTML = '';
         fiveDayForecast.appendChild(forecastContainer);
         weatherWidget.classList.remove('hidden');
     }
 
-    // === Function to Handle Errors ===
+    // Function to Handle Errors
     function handleError(message) {
         cityNameElem.textContent = message; // Display error message
         temperatureElem.textContent = '';
         weatherDescriptionElem.textContent = '';
     }
 
-    // === Event Handler for Weather Requests ===
+    // Event Handler for Weather Requests
     function handleWeatherRequest(event) {
-        // Trigger on button click or Enter key press
         if (event.type === 'click' || (event.type === 'keydown' && event.key === 'Enter')) {
             const city = cityInput.value.trim();
             if (city) {
@@ -162,38 +159,22 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    // === Function to Set a Cookie ===
-    function setCookie(name, value, days) {
-        const expires = new Date(Date.now() + days * 864e5).toUTCString(); // Calculate expiration date
-        document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`; // Set the cookie
-    }
-
-    // === Function to Get a Cookie Value ===
-    function getCookie(name) {
-        return document.cookie.split('; ').reduce((accumulator, currentCookie) => {
-            const [cookieName, cookieValue] = currentCookie.split('=');
-            return cookieName === name ? decodeURIComponent(cookieValue) : accumulator;
-        }, '');
-    }
-
-    // === Function to Setup Charts ===
+    // Setup Charts
     function setupCharts(dailyForecasts) {
         const tempChartElem = document.getElementById('VerticalBarChart');
         const doughnutChartElem = document.getElementById('DoughnutChart');
         const lineChartElem = document.getElementById('LineChart');
 
-        // Validate chart elements
         if (!tempChartElem || !doughnutChartElem || !lineChartElem) {
             console.error("Chart elements not found in DOM");
             return;
         }
 
-        // Get chart contexts
         const tempChartCtx = tempChartElem.getContext('2d');
         const doughnutCtx = doughnutChartElem.getContext('2d');
         const lineChartCtx = lineChartElem.getContext('2d');
 
-        // Destroy existing charts to prevent duplication
+        // Destroy previous charts
         if (verticalBarChart !== null) {
             verticalBarChart.destroy();
         }
@@ -204,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             lineChart.destroy();
         }
 
-        // === Vertical Bar Chart for Temperature ===
+        // Vertical Bar Chart
         verticalBarChart = new Chart(tempChartCtx, {
             type: 'bar',
             data: {
@@ -242,7 +223,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         });
 
-        // Doughnut Chart for weather conditions
+        // Doughnut Chart
         const weatherConditions = dailyForecasts.reduce((acc, forecast) => {
             const condition = forecast.weather[0].main;
             acc[condition] = (acc[condition] || 0) + 1;
@@ -289,7 +270,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             }
         });
 
-        // === Line Chart for Temperature Changes ===
+        // Line Chart
         lineChart = new Chart(lineChartCtx, {
             type: 'line',
             data: {
@@ -328,13 +309,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         });
     }
 
-    // === Function to Set a Cookie ===
+    // Set Cookies Yummmm
     function setCookie(name, value, days) {
         const expires = new Date(Date.now() + days * 864e5).toUTCString(); // Calculate expiration date
         document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`; // Set the cookie
     }
 
-    // === Function to Get a Cookie Value ===
+    // Get Cookies Yummmmm
     function getCookie(name) {
         return document.cookie.split('; ').reduce((accumulator, currentCookie) => {
             const [cookieName, cookieValue] = currentCookie.split('=');
@@ -342,7 +323,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }, '');
     }
 
-    // === Function to Dynamically Set Weather Widget Background Color ===
+    // Set Weather Widget Background Color
     function setWeatherBackground(weatherDescription) {
         if (weatherDescription.includes('clear') || weatherDescription.includes('sunny')) {
             weatherWidget.style.backgroundColor = '#87CEEB'; // Light blue for clear or sunny weather
@@ -363,7 +344,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else if (weatherDescription.includes('sand') || weatherDescription.includes('dust') || weatherDescription.includes('ash')) {
             weatherWidget.style.backgroundColor = '#F4A460'; // Sandy brown for sand, dust, or volcanic ash
         } else {
-            weatherWidget.style.backgroundColor = '#FFFFFF'; // Default to white if no specific condition
+            weatherWidget.style.backgroundColor = '#FFFFFF';
         }
     }
 });

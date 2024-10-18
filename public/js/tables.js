@@ -1,10 +1,10 @@
 let openWeatherApiKey = '';
-let forecastData = []; // Store fetched forecast data for manipulation
-let isCelsius = true;  // Toggle state for unit conversion
-let currentPage = 1; // Track the current page
-const itemsPerPage = 5; // Number of items to display per page
+let forecastData = [];
+let isCelsius = true; 
+let currentPage = 1; 
+const itemsPerPage = 5;
 
-// Function to fetch API keys from the server
+// fetch API keys from the server
 function fetchApiKeys() {
     return fetch('/api/config')
         .then(response => {
@@ -22,7 +22,7 @@ function fetchApiKeys() {
         });
 }
 
-// Function to fetch weather data
+// fetch weather data
 function fetchWeather() {
     const city = document.getElementById('cityInput').value.trim();
     if (!openWeatherApiKey) {
@@ -45,7 +45,7 @@ function fetchWeather() {
             return response.json();
         })
         .then(data => {
-            forecastData = data.list;  // Store fetched forecast data
+            forecastData = data.list;
             populateForecastTable(forecastData);
         })
         .catch(error => {
@@ -54,25 +54,23 @@ function fetchWeather() {
         });
 }
 
-
+// Toggle b/w F and C
 const selectElement = document.getElementById('filterOptions');
-// Function to toggle between Celsius and Fahrenheit
 function toggleUnit() {
-    isCelsius = !isCelsius; // Toggle state
+    isCelsius = !isCelsius;
     const unitButton = document.getElementById('unitToggle');
     unitButton.textContent = isCelsius ? 'Switch to Fahrenheit' : 'Switch to Celsius';
 
-    // Find the "unitToggle" option by iterating through options
     for (let i = 0; i < selectElement.options.length; i++) {
         if (selectElement.options[i].value === 'unitToggle') {
             selectElement.options[i].text = isCelsius ? 'Switch to Fahrenheit' : 'Switch to Celsius';
             break;
         }
     }
-    populateForecastTable(forecastData); // Re-render table
+    populateForecastTable(forecastData);
 }
 
-// Function to sort temperatures in ascending or descending order
+// sort temperatures in ascending/descending order
 function sortTemperatures(order = 'asc') {
     forecastData.sort((a, b) => {
         const tempA = a.main.temp;
@@ -82,13 +80,13 @@ function sortTemperatures(order = 'asc') {
     populateForecastTable(forecastData);
 }
 
-// Function to filter out days without rain
+// filter out days without rain
 function filterRain() {
     const filteredData = forecastData.filter(item => item.weather[0].description.includes('rain'));
     populateForecastTable(filteredData);
 }
 
-// Function to find the day with the highest temperature
+// find the day with the highest temperature
 function findHighestTemperature() {
     const highestTempDay = forecastData.reduce((prev, current) => {
         return (prev.main.temp > current.main.temp) ? prev : current;
@@ -96,55 +94,58 @@ function findHighestTemperature() {
     alert(`The highest temperature is on ${new Date(highestTempDay.dt * 1000).toLocaleDateString()} with ${highestTempDay.main.temp}°C`);
 }
 
-// Function to populate the forecast table with pagination
 function populateForecastTable(data) {
     const forecastTable = document.getElementById('forecastTable');
-    forecastTable.innerHTML = ''; // Clear previous data
+    forecastTable.innerHTML = '';
 
     const unitSymbol = isCelsius ? '°C' : '°F';
-    const startIndex = (currentPage - 1) * itemsPerPage; // Calculate the start index
-    const endIndex = startIndex + itemsPerPage; // Calculate the end index
-    const paginatedData = data.slice(startIndex, endIndex); // Get the paginated data
+    const startIndex = (currentPage - 1) * itemsPerPage; 
+    const endIndex = startIndex + itemsPerPage; 
+    const paginatedData = data.slice(startIndex, endIndex);
 
     paginatedData.forEach(item => {
         const date = new Date(item.dt * 1000);
         const dateString = date.toLocaleDateString();
-        let temperature = item.main.temp;
+        const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+        let temperature = item.main.temp;
         if (!isCelsius) {
             temperature = (temperature * 9 / 5) + 32; // Convert Celsius to Fahrenheit
         }
 
         const condition = item.weather[0].description;
-        const humidity = item.main.humidity; // New field
-        const windSpeed = item.wind.speed; // New field
-        const pressure = item.main.pressure; // New field
+        const humidity = item.main.humidity;
+        const windSpeed = item.wind.speed;
+        const pressure = item.main.pressure;
 
         const row = document.createElement('tr');
         row.innerHTML = `
             <td class="py-2 px-4">${dateString}</td>
+            <td class="py-2 px-4">${timeString}</td> <!-- New Time column -->
             <td class="py-2 px-4">${temperature.toFixed(1)} ${unitSymbol}</td>
             <td class="py-2 px-4 capitalize">${condition}</td>
-            <td class="py-2 px-4">${humidity}%</td> 
-            <td class="py-2 px-4">${windSpeed} m/s</td> 
-            <td class="py-2 px-4">${pressure} hPa</td> 
+            <td class="py-2 px-4">${humidity}%</td>
+            <td class="py-2 px-4">${windSpeed} m/s</td>
+            <td class="py-2 px-4">${pressure} hPa</td>
         `;
         forecastTable.appendChild(row);
     });
 
-    updatePaginationControls(data.length); // Update pagination controls
+    updatePaginationControls(data.length);
 }
 
-// Function to update pagination controls
+
+// update pagination controls
 function updatePaginationControls(totalItems) {
-    const totalPages = Math.ceil(totalItems / itemsPerPage); // Calculate total pages
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     const pageInfo = document.getElementById('pageInfo');
     if (pageInfo) {
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`; // Update page info
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
     }
 
     const prevButton = document.getElementById('prevPage');
     const nextButton = document.getElementById('nextPage');
+
     if (prevButton) prevButton.disabled = currentPage === 1; // Disable previous button if on first page
     if (nextButton) nextButton.disabled = currentPage === totalPages; // Disable next button if on last page
 }
@@ -178,7 +179,6 @@ document.getElementById('sortDesc').addEventListener('click', () => sortTemperat
 document.getElementById('filterRain').addEventListener('click', filterRain);
 document.getElementById('highestTemp').addEventListener('click', findHighestTemperature);
 
-// Call fetchApiKeys when the page loads to get the API keys
 window.onload = function () {
     fetchApiKeys();
 };
